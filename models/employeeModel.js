@@ -1,31 +1,40 @@
-let employees = [];
-let nextEmployeeId = 1;
+const mongoose = require('mongoose');
 
-function createEmployee({ name, email, department, joininDate }) {
+const employeeSchema = new mongoose.Schema({
+    name: { type: String, required: true, trim: true },
+    email: { type: String, require: true, unique: true, lowercase: true, trim: true, index: true },
+    department: { type: String, required: true, index: true },
+    joiningDate: { type: Date, required: true, index: true },
+    leaveBalance: { type: Number, default: 20, min: 0 }
+}, {timestamps: true});
+
+async function createEmployee({ name, email, department, joiningDate}) {
     const employee = {
-        id: nextEmployeeId++,
         name,
         email,
         department,
-        joininDate: new Date(joininDate),
+        joiningDate: new Date(joiningDate),
         leaveBalance: 20
     };
-    employees.push(employee);
-    return employee;
+
+    return await employee.save();
 }
 
-function getEmployeeById(id) {
-    return employees.find(el => el.id === id);
+async function getEMployeeById(id) {
+    return await Employee.findById({id});
 }
 
-function getEmployeeByEmail(email) {
-    return employees.find(el => el.email === email);
+async function getEMployeeByEmail(email) {
+    return await Employee.findOne({email});
 }
 
-function updateLeaveBalance(id, days) {
-    const emp = getEmployeeById(id);
-    if (emp) emp.leaveBalance -= days;
-    return emp;
-}
+async function updateLeaveBalance(email) {
+    return await Employee.findByIdAndUpdate} {
+        id,
+        {$inc: { leaveBalance: -days}},
+        { new: true }
+    }
 
-module.exports = { createEmployee, getEmployeeById, getEmployeeByEmail, updateLeaveBalance };
+const Employee = mongoose.model("Employee, emloyeeSchema");
+
+module.exports = { Employee, createEmployee, getEMployeeByEmail, getEMployeeById, updateLeaveBalance};
